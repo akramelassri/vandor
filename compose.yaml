@@ -1,4 +1,13 @@
 services:
+  vandor-web:
+    image: tomcat:11.0
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./deploy:/usr/local/tomcat/webapps
+    depends_on:
+      - vandor-db
+
   vandor-db:
     image: postgres:18-alpine
     environment:
@@ -6,8 +15,8 @@ services:
       POSTGRES_USER: vandor
       POSTGRES_PASSWORD: vandorpw
     volumes:
-      - vandor-pgdata:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - vandor-pgdata:/var/lib/postgresql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
 
