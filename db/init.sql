@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    hashed_pass VARCHAR(255),
+    hashed_pass VARCHAR(60), -- Bcrypt hash length is 60
     status VARCHAR (20) NOT NULL DEFAULT 'ACTIVE',
     role VARCHAR(20) NOT NULL,
 
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE TABLE IF NOT EXISTS orders (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     customer_id BIGINT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- we can delegate date timestamp to db in this case
+    created_at TIMESTAMPTZ NOT NULL, -- we let the application set the timestamp instead of setting a default
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
 
     CONSTRAINT fk_order_user
