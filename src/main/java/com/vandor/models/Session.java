@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 @Table(name = "sessions")
 public class Session {
     @Id
-    @Column(name = "id", insertable = false, nullable = false)
+    @Column(name = "id", nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -24,5 +24,37 @@ public class Session {
 
     public Session() {
         id = UUID.randomUUID();
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
     }
 }

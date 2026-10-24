@@ -21,4 +21,12 @@ public class SellerUser {
     // For JPA
     protected SellerUser() {
     }
+
+    public Long getSellerId() {
+        return sellerId;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

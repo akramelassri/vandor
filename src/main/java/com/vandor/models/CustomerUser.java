@@ -21,4 +21,12 @@ public class CustomerUser {
     // For JPA
     protected CustomerUser() {
     }
+
+    public Long getCustomerId() {
+        return customerId;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }
