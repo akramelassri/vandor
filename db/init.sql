@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS sessions (
     id UUID PRIMARY KEY, -- id generated in backend
-    user_id BIGINT, -- Can be null
+    user_id BIGINT NOT NULL, 
     created_at TIMESTAMPTZ NOT NULL, -- Managed by the application
     expires_at TIMESTAMPTZ NOT NULL,
 
@@ -107,15 +107,15 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 -- Cron job to remove items of expired session
 CREATE TABLE IF NOT EXISTS cart_items (
-    session_id UUID NOT NULL,
+    user_id BIGINT NOT NULL, -- Related to user
     product_id BIGINT NOT NULL,
     quantity INTEGER NOT NULL,
 
-    PRIMARY KEY (session_id, product_id),
+    PRIMARY KEY (user_id, product_id),
 
-    CONSTRAINT fk_cart_session
-        FOREIGN KEY (session_id)
-        REFERENCES sessions(id)
+    CONSTRAINT fk_cart_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
         ON DELETE CASCADE,
 
     CONSTRAINT fk_cart_product
