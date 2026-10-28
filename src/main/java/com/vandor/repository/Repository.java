@@ -31,13 +31,16 @@ public abstract class Repository<T, ID> {
     }
 
     public List<T> findAll() {
-        return em.createQuery("FROM " + entityClass.getName(), entityClass)
+        String entityName = em.getMetamodel()
+                .entity(entityClass)
+                .getName();
+        return em.createQuery("FROM " + entityName, entityClass)
                 .getResultList();
     }
 
     public void delete(ID id) {
         T entity = findById(id).orElseThrow(() -> {
-            throw new RuntimeException("User not found");
+            throw new EntityNotFoundException(entityClass.getSimpleName() + " not found with id " + id);
         });
         em.remove(entity);
     }
