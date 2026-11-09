@@ -35,13 +35,13 @@ public class AdminServlet extends HttpServlet {
     switch (request.getParameter("action") == null ? "" : request.getParameter("action")) {
       case "user" -> admin.status(actor, Web.id(request, "id"), Web.userStatus(request));
       case "category" ->
-        admin.saveCategory(
-            actor,
-            Web.integer(request.getParameter("id")),
-            request.getParameter("name"),
-            request.getParameter("description"));
+          admin.saveCategory(
+              actor,
+              Web.integer(request.getParameter("id")),
+              request.getParameter("name"),
+              request.getParameter("description"));
       case "delete-category" ->
-        admin.deleteCategory(actor, Web.integer(request.getParameter("id")));
+          admin.deleteCategory(actor, Web.integer(request.getParameter("id")));
       case "status" -> orders.change(actor, Web.id(request, "id"), Web.orderStatus(request));
       default -> throw new IllegalArgumentException("Unknown admin action.");
     }

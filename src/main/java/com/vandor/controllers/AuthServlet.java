@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
-@WebServlet(urlPatterns = { "/login", "/register", "/logout" })
+@WebServlet(urlPatterns = {"/login", "/register", "/logout"})
 public class AuthServlet extends HttpServlet {
   private final AuthService authService;
 
@@ -70,12 +70,13 @@ public class AuthServlet extends HttpServlet {
       login(request, response);
       return;
     }
-    RegisterRequest data = new RegisterRequest(
-        request.getParameter("firstName"),
-        request.getParameter("lastName"),
-        request.getParameter("email"),
-        request.getParameter("password"),
-        request.getParameter("role"));
+    RegisterRequest data =
+        new RegisterRequest(
+            request.getParameter("firstName"),
+            request.getParameter("lastName"),
+            request.getParameter("email"),
+            request.getParameter("password"),
+            request.getParameter("role"));
     try {
       authService.registerUser(data);
     } catch (ValidationException e) {
@@ -96,7 +97,8 @@ public class AuthServlet extends HttpServlet {
     SessionService sessions = new SessionService();
     Session authenticated;
     try {
-      authenticated = sessions.login(request.getParameter("email"), request.getParameter("password"));
+      authenticated =
+          sessions.login(request.getParameter("email"), request.getParameter("password"));
     } catch (IllegalArgumentException e) {
       response.setStatus(400);
       request.setAttribute("error", e.getMessage());
@@ -121,8 +123,9 @@ public class AuthServlet extends HttpServlet {
           request, response, authenticated.getId().toString(), SessionService.LIFETIME_SECONDS);
       String destination = (String) httpSession.getAttribute("afterLogin");
       httpSession.removeAttribute("afterLogin");
-      boolean resume = authenticated.getUser().getRole() == UserRole.CUSTOMER
-          && ("/checkout".equals(destination) || "/orders".equals(destination));
+      boolean resume =
+          authenticated.getUser().getRole() == UserRole.CUSTOMER
+              && ("/checkout".equals(destination) || "/orders".equals(destination));
       Web.redirect(
           request,
           response,
@@ -145,9 +148,9 @@ public class AuthServlet extends HttpServlet {
       throws ServletException, IOException {
     switch (request.getServletPath()) {
       case "/login" ->
-        request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+          request.getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
       case "/register" ->
-        request.getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+          request.getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
       default -> response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
   }

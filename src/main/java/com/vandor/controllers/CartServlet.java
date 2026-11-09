@@ -57,7 +57,8 @@ public class CartServlet extends HttpServlet {
             && !"buy".equals(action)) {
           throw new IllegalArgumentException("Unknown cart action.");
         }
-        Integer quantity = "remove".equals(action) ? 0 : Web.integer(request.getParameter("quantity"));
+        Integer quantity =
+            "remove".equals(action) ? 0 : Web.integer(request.getParameter("quantity"));
         if (quantity == null
             || quantity < 0
             || (("add".equals(action) || "buy".equals(action)) && quantity == 0)) {
