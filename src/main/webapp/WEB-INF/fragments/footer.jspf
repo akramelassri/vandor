@@ -1,0 +1,10 @@
+</main>
+    <footer class="site-footer">
+      <div class="wrap footer-in">
+        <a class="logo" href="${ctx}/shop">Vandor.</a>
+        <p>Independent makers. Everyday treasures.</p>
+        <span>Made with care.</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<c:if test="${empty orders}">
+  <div class="empty">
+    <h3>No orders yet</h3>
+    <p>Orders will appear here once a customer checks out.</p>
+  </div>
+</c:if>
+<c:forEach items="${orders}" var="order">
+  <article class="panel order-card">
+    <div class="row spread">
+      <div>
+        <h3>Order #${order.id}</h3>
+        <span class="muted small">
+          ${order.date} UTC
+          <c:if test="${currentUser.role != 'CUSTOMER'}">
+            · <c:out value="${order.customer.user.firstName}"/> <c:out value="${order.customer.user.lastName}"/>
+          </c:if>
+        </span>
+      </div>
+      <span class="badge status-${order.status}">${order.status}</span>
+    </div>
+    <c:forEach items="${order.items}" var="line">
+      <c:if test="${currentUser.role != 'SELLER' || line.product.seller.sellerId == currentUser.id}">
+        <div class="cart-line">
+          <div class="grow">
+            <strong><c:out value="${line.product.name}"/></strong>
+            <p class="small muted">
+              ${line.quantity} × ${line.product.formattedPrice} ·
+              <c:out value="${line.product.seller.user.firstName}"/> <c:out value="${line.product.seller.user.lastName}"/>
+            </p>
+          </div>
+          <strong>
+            <fmt:formatNumber
+              value="${line.product.price * line.quantity / 100}"
+              type="currency"
+              currencySymbol="€"
+            />
+          </strong>
+        </div>
+      </c:if>
+    </c:forEach>
+    <div class="row spread">
+      <c:if test="${currentUser.role != 'SELLER' || !order.mixedSeller}">
+        <strong>Current item total: ${order.formattedTotal}</strong>
+      </c:if>
+      <c:choose>
+        <c:when test="${currentUser.role == 'CUSTOMER' && order.status == 'PENDING'}">
+          <form
+            method="post"
+            action="${ctx}/orders"
+            data-confirm="Cancel this order and restore its stock?"
+          >
+            <v:csrf />
+            <input type="hidden" name="id" value="${order.id}" />
+            <button class="btn outline sm">Cancel order</button>
+          </form>
+        </c:when>
+        <c:when test="${currentUser.role == 'ADMIN' || (currentUser.role == 'SELLER' && !order.mixedSeller)}">
+          <c:if test="${order.status == 'PENDING' || order.status == 'CONFIRMED'}">
+            <form
+              class="row"
+              method="post"
+              action="${ctx}${currentUser.role == 'ADMIN' ? '/admin' : '/studio'}"
+            >
+              <v:csrf />
+              <input type="hidden" name="action" value="status" />
+              <input type="hidden" name="id" value="${order.id}" />
+              <button class="btn sm" name="status" value="${order.status == 'PENDING' ? 'CONFIRMED' : 'COMPLETED'}">
+                ${order.status == 'PENDING' ? 'Confirm' : 'Mark completed'}
+              </button>
+              <button
+                class="btn outline sm"
+                name="status"
+                value="CANCELLED"
+                data-confirm-button="Cancel this order and restore stock?"
+              >
+                Cancel order
+              </button>
+            </form>
+          </c:if>
+        </c:when>
+      </c:choose>
+      <c:if test="${currentUser.role == 'SELLER' && order.mixedSeller}">
+        <p class="muted small">This shared order is managed by an administrator.</p>
+      </c:if>
+    </div>
+  </article>
+</c:forEach>

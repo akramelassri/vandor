@@ -1,0 +1,317 @@
+/* Foundation */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --primary: #2f5d50;
+  --primary-h: #244a40;
+  --primary-soft: #f1f5f3;
+  --primary-b: #c9d8d2;
+  --bg: #ffffff;
+  --text: #1c1c1c;
+  --text2: #555a5f;
+  --text3: #6f7378;
+  --border: #e5e5e5;
+  --border2: #cccccc;
+  --gray-bg: #f4f4f4;
+  --r: 6px;
+  --r-sm: 5px;
+  --font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.55 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+
+::selection {
+  background: var(--primary);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.wrap {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 20px;
+}
+
+.link {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 9px 16px;
+  min-height: 40px;
+  border-radius: var(--r-sm);
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary);
+  transition:
+    background-color 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--primary-h);
+  border-color: var(--primary-h);
+}
+
+.btn.sm {
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: 13px;
+  gap: 6px;
+}
+
+.btn.wide {
+  width: 100%;
+}
+
+.ic {
+  flex: none;
+}
+
+/* Header */
+.hdr {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+}
+
+.hdr-in {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 64px;
+  padding-block: 10px;
+}
+
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.hdr-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.hdr-nav .nl {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.hdr-nav .nl:hover {
+  background: var(--gray-bg);
+}
+
+.hdr-nav .nl.on {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* Forms */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.input {
+  background: #fff;
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  font: 14.5px var(--font);
+  color: var(--text);
+  outline: none;
+  width: 100%;
+  transition:
+    border 0.15s,
+    box-shadow 0.15s;
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.input::placeholder {
+  color: var(--text3);
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+}
+
+/* Authentication */
+.authpg {
+  display: grid;
+  place-items: center;
+  padding-block: 44px 72px;
+}
+
+.auth-card {
+  width: min(470px, 100%);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 28px;
+}
+
+.auth-card h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.alt {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--text2);
+}
+
+.rolepick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.rolebox {
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  padding: 12px;
+  cursor: pointer;
+  display: block;
+  transition: 0.15s;
+  position: relative;
+}
+
+.rolebox input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rolebox:has(input:checked) {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+  background: var(--primary-soft);
+}
+
+.rolebox .rt {
+  display: block;
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-bottom: 2px;
+}
+
+.rdesc {
+  display: block;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+/* Keep hidden radio controls keyboard accessible with a visible card focus. */
+.rolebox:has(input:focus-visible) {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.notice {
+  padding: 12px 14px;
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-b);
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 720px) {
+  .hdr-in {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
+
+@media (max-width: 520px) {
+  .grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.notice.error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.notice ul {
+  padding-left: 18px;
+}

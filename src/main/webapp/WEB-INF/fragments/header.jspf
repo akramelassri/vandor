@@ -1,0 +1,57 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%@ taglib prefix="v" tagdir="/WEB-INF/tags" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vandor — Handmade, thoughtfully chosen</title>
+    <link rel="stylesheet" href="${ctx}/assets/css/auth.css" />
+    <link rel="stylesheet" href="${ctx}/assets/css/market.css" />
+    <script src="${ctx}/assets/js/market.js" defer></script>
+  </head>
+  <body>
+    <header class="hdr">
+      <div class="wrap hdr-in">
+        <a class="logo" href="${ctx}/shop">
+          Vandor<span class="logo-dot">.</span>
+        </a>
+        <nav class="hdr-nav" aria-label="Main navigation">
+          <a class="nl" href="${ctx}/shop">Shop</a>
+          <c:choose>
+            <c:when test="${empty currentUser}">
+              <a class="nl" href="${ctx}/cart">Cart</a>
+              <a class="nl" href="${ctx}/login">Sign in</a>
+              <a class="btn sm" href="${ctx}/register">Register</a>
+            </c:when>
+            <c:otherwise>
+              <c:if test="${currentUser.role == 'CUSTOMER'}">
+                <a class="nl" href="${ctx}/cart">Cart</a>
+                <a class="nl" href="${ctx}/orders">Orders</a>
+              </c:if>
+              <c:if test="${currentUser.role == 'SELLER'}">
+                <a class="nl" href="${ctx}/studio">Seller studio</a>
+              </c:if>
+              <c:if test="${currentUser.role == 'ADMIN'}">
+                <a class="nl" href="${ctx}/admin">Administration</a>
+              </c:if>
+              <span class="nav-name"><c:out value="${currentUser.firstName}"/></span>
+              <form method="post" action="${ctx}/logout">
+                <v:csrf />
+                <button class="btn outline sm">Sign out</button>
+              </form>
+            </c:otherwise>
+          </c:choose>
+        </nav>
+      </div>
+    </header>
+    <main class="wrap market">
+      <c:if test="${not empty flash}">
+        <p class="notice" role="status"><c:out value="${flash}"/></p>
+      </c:if>
+      <c:if test="${not empty error}">
+        <p class="notice error" role="alert"><c:out value="${error}"/></p>
+      </c:if>

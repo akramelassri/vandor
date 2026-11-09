@@ -1,0 +1,37 @@
+<article class="product-card">
+  <a
+    href="${ctx}/product?id=${p.id}"
+    class="product-image"
+  >
+    <img
+      src="${ctx}/images/<c:out value='${p.thumbnail}'/>"
+      alt="<c:out value='${p.name}'/>"
+      loading="lazy"
+    />
+    <c:if test="${p.stock == 0}">
+      <span class="badge image-badge">Sold out</span>
+    </c:if>
+  </a>
+  <div class="card-body">
+    <p class="eyebrow"><c:out value="${p.category.name}"/></p>
+    <a href="${ctx}/product?id=${p.id}">
+      <h3><c:out value="${p.name}"/></h3>
+    </a>
+    <p class="muted small">By <c:out value="${p.seller.user.firstName}"/> <c:out value="${p.seller.user.lastName}"/></p>
+    <div class="row spread">
+      <strong>${p.formattedPrice}</strong>
+      <c:if test="${p.stock > 0 && p.stock <= 3}">
+        <span class="stock-low">Only ${p.stock} left</span>
+      </c:if>
+    </div>
+    <c:if test="${p.stock > 0 && (empty currentUser || currentUser.role == 'CUSTOMER')}">
+      <form method="post" action="${ctx}/cart">
+        <v:csrf />
+        <input type="hidden" name="action" value="add" />
+        <input type="hidden" name="product" value="${p.id}" />
+        <input type="hidden" name="quantity" value="1" />
+        <button class="btn outline wide">Add to cart</button>
+      </form>
+    </c:if>
+  </div>
+</article>
