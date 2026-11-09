@@ -76,6 +76,14 @@ public class ProductRepository extends Repository<Product, Long> {
         .getResultList();
   }
 
+  public boolean usesThumbnail(String thumbnail) {
+    return em.createQuery(
+                "SELECT count(p) FROM Product p WHERE p.thumbnail = :thumbnail", Long.class)
+            .setParameter("thumbnail", thumbnail)
+            .getSingleResult()
+        > 0;
+  }
+
   public boolean ordered(Long id) {
     return em.createQuery("SELECT count(i) FROM OrderItem i WHERE i.product.id = :id", Long.class)
             .setParameter("id", id)

@@ -26,6 +26,7 @@ import com.vandor.util.TransactionManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -45,6 +47,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class MarketServiceTest {
   static EntityManagerFactory factory;
@@ -56,6 +59,7 @@ class MarketServiceTest {
   SessionService sessions;
   long customer, buyer2, seller, seller2, admin, product, otherProduct;
   int category;
+  @TempDir Path photos;
 
   @BeforeAll
   static void database() throws Exception {
@@ -99,7 +103,7 @@ class MarketServiceTest {
   void setup() {
     carts = new CartService(db);
     orders = new OrderService(db);
-    sellers = new SellerService(db);
+    sellers = new SellerService(db, new ImageService(photos));
     admins = new AdminService(db);
     sessions = new SessionService(db);
     db.execute(em -> {
@@ -398,5 +402,90 @@ class MarketServiceTest {
     assertTrue(catalog.categories().stream().anyMatch(c -> c.getName().equals("Linen")));
     admins.deleteCategory(admin, category.getId());
     assertTrue(catalog.categories().stream().noneMatch(c -> c.getId().equals(category.getId())));
+  }
+
+  private String photo(long productId) throws IOException {
+    String name = UUID.randomUUID() + ".png";
+    Files.write(photos.resolve(name), new byte[] {1, 2, 3});
+    db.execute(em -> {
+      em.find(Product.class, productId).setThumbnail(name);
+      return null;
+    });
+    return name;
+  }
+
+  @Test
+  void replacesAndDeletesProductPhotosAfterSuccessfulChanges() throws Exception {
+    String oldPhoto = photo(product);
+    String newPhoto = UUID.randomUUID() + ".png";
+    Files.write(photos.resolve(newPhoto), new byte[] {4, 5, 6});
+    sellers.save(
+        seller, product, "Updated cup", "A lovely handmade cup", category, 1500, 2, newPhoto);
+    assertFalse(Files.exists(photos.resolve(oldPhoto)));
+    assertTrue(Files.exists(photos.resolve(newPhoto)));
+    assertEquals(newPhoto, sellers.listing(seller, product).getThumbnail());
+
+    sellers.save(seller, product, "Updated cup", "A lovely handmade cup", category, 1500, 2, null);
+    assertTrue(Files.exists(photos.resolve(newPhoto)));
+    sellers.save(
+        seller, product, "Updated cup", "A lovely handmade cup", category, 1500, 2, newPhoto);
+    assertTrue(Files.exists(photos.resolve(newPhoto)));
+
+    sellers.delete(seller, product);
+    assertFalse(Files.exists(photos.resolve(newPhoto)));
+  }
+
+  @Test
+  void failedChangesKeepTheExistingPhoto() throws Exception {
+    String oldPhoto = photo(product);
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            sellers.save(
+                seller, product, "Updated cup", "A lovely handmade cup", category, 0, 2, null));
+    assertThrows(AccessDeniedException.class, () -> sellers.delete(seller2, product));
+    add(customer, product, 1);
+    orders.checkout(customer);
+    assertThrows(IllegalArgumentException.class, () -> sellers.delete(seller, product));
+    assertTrue(Files.exists(photos.resolve(oldPhoto)));
+    assertEquals(oldPhoto, sellers.listing(seller, product).getThumbnail());
+  }
+
+  @Test
+  void keepsSharedPhotosUntilTheLastListingStopsUsingThem() throws Exception {
+    String sharedPhoto = photo(product);
+    db.execute(em -> {
+      em.find(Product.class, otherProduct).setThumbnail(sharedPhoto);
+      return null;
+    });
+    String newPhoto = UUID.randomUUID() + ".png";
+    Files.write(photos.resolve(newPhoto), new byte[] {4, 5, 6});
+    sellers.save(
+        seller, product, "Updated cup", "A lovely handmade cup", category, 1500, 2, newPhoto);
+    assertTrue(Files.exists(photos.resolve(sharedPhoto)));
+    sellers.delete(seller2, otherProduct);
+    assertFalse(Files.exists(photos.resolve(sharedPhoto)));
+    assertTrue(Files.exists(photos.resolve(newPhoto)));
+  }
+
+  @Test
+  void cleanupFailureDoesNotFailACommittedSave() throws Exception {
+    String oldPhoto = photo(product);
+    String newPhoto = UUID.randomUUID() + ".png";
+    Files.write(photos.resolve(newPhoto), new byte[] {4, 5, 6});
+    ImageService failingImages =
+        new ImageService(photos) {
+          @Override
+          public void discard(String name) throws IOException {
+            // A separate transaction can see the new thumbnail only after the save commits.
+            assertEquals(newPhoto, sellers.listing(seller, product).getThumbnail());
+            throw new IOException("Simulated cleanup failure");
+          }
+        };
+    new SellerService(db, failingImages)
+        .save(seller, product, "Updated cup", "A lovely handmade cup", category, 1500, 2, newPhoto);
+    assertEquals(newPhoto, sellers.listing(seller, product).getThumbnail());
+    assertTrue(Files.exists(photos.resolve(newPhoto)));
+    assertTrue(Files.exists(photos.resolve(oldPhoto)));
   }
 }
