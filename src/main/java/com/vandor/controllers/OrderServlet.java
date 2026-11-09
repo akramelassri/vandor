@@ -65,7 +65,7 @@ public class OrderServlet extends HttpServlet {
               request,
               response,
               "/orders",
-              "Order placed. Created " + ids.size() + " order(response), one per seller.");
+              "Order placed. Created " + ids.size() + " order(s), one per seller.");
         } catch (IllegalArgumentException e) {
           request.setAttribute("error", e.getMessage());
           response.setStatus(400);
