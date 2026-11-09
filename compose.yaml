@@ -5,6 +5,12 @@ services:
       - "8080:8080"
     volumes:
       - ./deploy:/usr/local/tomcat/webapps:Z
+      - vandor-uploads:/var/lib/vandor/uploads
+    environment:
+      DB_URL: jdbc:postgresql://vandor-db:5432/vandor_db
+      DB_USER: vandor
+      DB_PASSWORD: vandorpw
+      UPLOAD_DIR: /var/lib/vandor/uploads
     depends_on:
       - vandor-db
 
@@ -22,3 +28,4 @@ services:
 
 volumes:
   vandor-pgdata:
+  vandor-uploads:
