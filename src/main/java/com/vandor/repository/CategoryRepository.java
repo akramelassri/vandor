@@ -3,9 +3,9 @@ package com.vandor.repository;
 import com.vandor.models.Category;
 import jakarta.persistence.EntityManager;
 
-public class CategoryRepository extends Repository<Category, Long> {
+public class CategoryRepository extends Repository<Category, Integer> {
 
-    public CategoryRepository(EntityManager em) {
-        super(em, Category.class);
-    }
+  public CategoryRepository(EntityManager em) {
+    super(em, Category.class);
+  }
 }

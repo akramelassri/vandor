@@ -5,7 +5,7 @@ import jakarta.persistence.EntityManager;
 
 public class SellerUserRepository extends Repository<SellerUser, Long> {
 
-    public SellerUserRepository(EntityManager em) {
-        super(em, SellerUser.class);
-    }
+  public SellerUserRepository(EntityManager em) {
+    super(em, SellerUser.class);
+  }
 }
